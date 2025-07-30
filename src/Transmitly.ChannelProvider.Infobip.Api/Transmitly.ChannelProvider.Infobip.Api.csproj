@@ -47,7 +47,7 @@
 		<PackageReference Include="PolySharp" Version="1.15.0" PrivateAssets="All" />
 		<PackageReference Include="System.Text.Json" Version="9.0.1" Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework' or '$(TargetFrameworkIdentifier)' == '.NETStandard'" />
 		<PackageReference Include="Transmitly" Version="0.2.1" />
-		<PackageReference Include="Transmitly.ChannelProvider.Infobip.Configuration" Version="0.2.3" />
+		<PackageReference Include="Transmitly.ChannelProvider.Infobip.Configuration" Version="0.2.4" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
 		<Reference Include="System.Net.Http" />

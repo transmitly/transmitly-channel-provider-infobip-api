@@ -13,7 +13,6 @@
 //  limitations under the License.
 
 using System;
-using Transmitly.ChannelProvider.Infobip.Configuration;
 using Transmitly.Delivery;
 
 namespace Transmitly.ChannelProvider.Infobip.Api.Email

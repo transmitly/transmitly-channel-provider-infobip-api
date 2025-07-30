@@ -14,7 +14,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Transmitly.Channel.Configuration;
 using Transmitly.Channel.Configuration.Email;
 using Transmitly.ChannelProvider.Infobip.Configuration;
 using Transmitly.ChannelProvider.Infobip.Configuration.Email;

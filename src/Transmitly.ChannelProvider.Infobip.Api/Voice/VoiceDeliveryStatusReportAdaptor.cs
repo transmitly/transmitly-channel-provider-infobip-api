@@ -16,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Transmitly.ChannelProvider.Infobip.Configuration;
 using Transmitly.Delivery;
 
 namespace Transmitly.ChannelProvider.Infobip.Api.Voice

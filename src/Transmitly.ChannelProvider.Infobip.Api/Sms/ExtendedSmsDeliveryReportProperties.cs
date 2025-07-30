@@ -13,7 +13,6 @@
 //  limitations under the License.
 
 using System;
-using Transmitly.Channel.Configuration;
 using Transmitly.Channel.Configuration.Sms;
 using Transmitly.ChannelProvider.Infobip.Configuration;
 using Transmitly.ChannelProvider.Infobip.Configuration.Sms;
