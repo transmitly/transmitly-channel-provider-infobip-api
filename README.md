@@ -1,6 +1,6 @@
 # Transmitly.ChannelProvider.Infobip.Api
 
-A [Transmitly](https://github.com/transmitly/transmitly) channel provider dispatcher implementation using Infobip's APIs.
+A [Transmitly™](https://github.com/transmitly/transmitly) channel provider dispatcher implementation using Infobip's APIs.
 
 ### Getting started
 
