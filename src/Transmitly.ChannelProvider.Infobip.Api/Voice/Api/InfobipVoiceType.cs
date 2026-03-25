@@ -1,4 +1,4 @@
-﻿// ﻿﻿Copyright (c) Code Impressions, LLC. All Rights Reserved.
+﻿// Copyright (c) Code Impressions, LLC. All Rights Reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License")
 //  you may not use this file except in compliance with the License.
@@ -34,7 +34,13 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Voice
 		public InfobipVoiceType(IVoiceType? voiceType, VoiceGender overrideGender, string? overrideName)
 		{
 			if (overrideGender != VoiceGender.Unspecified)
+			{
+#if NET6_0_OR_GREATER
+				Gender = Enum.GetName(overrideGender);
+#else
 				Gender = Enum.GetName(typeof(VoiceGender), overrideGender);
+#endif
+			}
 			else
 				Gender = voiceType?.Gender;
 

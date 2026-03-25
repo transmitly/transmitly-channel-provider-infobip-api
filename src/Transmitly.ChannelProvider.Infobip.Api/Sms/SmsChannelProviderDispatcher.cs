@@ -1,4 +1,4 @@
-﻿// ﻿﻿Copyright (c) Code Impressions, LLC. All Rights Reserved.
+﻿// Copyright (c) Code Impressions, LLC. All Rights Reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License")
 //  you may not use this file except in compliance with the License.
@@ -49,9 +49,11 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Sms
 						cancellationToken
 					)
 					.ConfigureAwait(false);
-
+#if NET6_0_OR_GREATER
+				var responseContent = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+#else
 				var responseContent = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-
+#endif
 				if (!result.IsSuccessStatusCode)
 				{
 					var error = JsonSerializer.Deserialize<ApiRequestErrorResult>(responseContent);
@@ -84,7 +86,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Sms
 		}
 
 
-		private async Task<HttpContent> CreateSingleMessageRequestContent(IPlatformIdentityAddress recipient, ISms sms, IDispatchCommunicationContext communicationContext)
+		private static async Task<HttpContent> CreateSingleMessageRequestContent(IPlatformIdentityAddress recipient, ISms sms, IDispatchCommunicationContext communicationContext)
 		{
 			var smsProperties = new SmsExtendedChannelProperties(sms.ExtendedProperties);
 

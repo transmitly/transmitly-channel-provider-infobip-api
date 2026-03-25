@@ -1,4 +1,4 @@
-﻿// ﻿﻿Copyright (c) Code Impressions, LLC. All Rights Reserved.
+﻿// Copyright (c) Code Impressions, LLC. All Rights Reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License")
 //  you may not use this file except in compliance with the License.
@@ -52,8 +52,11 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Voice
 					)
 					.ConfigureAwait(false);
 
+#if NET6_0_OR_GREATER
+				var responseContent = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+#else
 				var responseContent = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-
+#endif
 				if (!result.IsSuccessStatusCode)
 				{
 					var error = JsonSerializer.Deserialize<ApiRequestErrorResult>(responseContent);
@@ -85,7 +88,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Voice
 			return results;
 		}
 
-		private async Task<HttpContent> CreateAdvancedMessagePayloadAsync(IPlatformIdentityAddress recipient, IVoice voice, IDispatchCommunicationContext context)
+		private static async Task<HttpContent> CreateAdvancedMessagePayloadAsync(IPlatformIdentityAddress recipient, IVoice voice, IDispatchCommunicationContext context)
 		{
 			var voiceProperties = new VoiceExtendedChannelProperties(voice.ExtendedProperties);
 			var messageId = Guid.NewGuid().ToString("N");

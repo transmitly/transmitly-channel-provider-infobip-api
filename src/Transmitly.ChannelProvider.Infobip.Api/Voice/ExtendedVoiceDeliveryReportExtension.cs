@@ -1,4 +1,4 @@
-﻿// ﻿﻿Copyright (c) Code Impressions, LLC. All Rights Reserved.
+﻿// Copyright (c) Code Impressions, LLC. All Rights Reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License")
 //  you may not use this file except in compliance with the License.
@@ -18,17 +18,19 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Voice
 	{
 		public static VoiceDeliveryReport ApplyExtendedProperties(this VoiceDeliveryReport voiceDeliveryReport, VoiceStatusReport report)
 		{
-			var ext = new ExtendedVoiceDeliveryReportProperties(voiceDeliveryReport);
-			ext.BulkId = report.BulkId;
-			ext.MessageId = report.MessageId;
-			ext.To = report.To;
-			ext.From = report.From;
-			ext.MccMnc = report.MccMnc;
-			ext.CallbackData = report.CallbackData;
-			ext.Price = report.Price;
-			ext.VoiceCall = report.VoiceCall;
-			ext.Status = report.Status;
-			ext.Error = report.Error;
+			_ = new ExtendedVoiceDeliveryReportProperties(voiceDeliveryReport)
+			{
+				BulkId = report.BulkId,
+				MessageId = report.MessageId,
+				To = report.To,
+				From = report.From,
+				MccMnc = report.MccMnc,
+				CallbackData = report.CallbackData,
+				Price = report.Price,
+				VoiceCall = report.VoiceCall,
+				Status = report.Status,
+				Error = report.Error
+			};
 
 			return voiceDeliveryReport;
 		}

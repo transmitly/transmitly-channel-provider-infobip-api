@@ -1,4 +1,4 @@
-﻿// ﻿﻿Copyright (c) Code Impressions, LLC. All Rights Reserved.
+﻿// Copyright (c) Code Impressions, LLC. All Rights Reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License")
 //  you may not use this file except in compliance with the License.
@@ -31,10 +31,10 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Email
 		private const string SendEmailPath = "email/3/send";
 		private readonly InfobipChannelProviderConfiguration _configuration = configuration;
 
-		protected override void ConfigureHttpClient(HttpClient client)
+		protected override void ConfigureHttpClient(HttpClient httpClient)
 		{
-			RestClientConfiguration.Configure(client, _configuration);
-			base.ConfigureHttpClient(client);
+			RestClientConfiguration.Configure(httpClient, _configuration);
+			base.ConfigureHttpClient(httpClient);
 		}
 
 		protected override async Task<IReadOnlyCollection<IDispatchResult?>> DispatchAsync(HttpClient restClient, IEmail communication, IDispatchCommunicationContext communicationContext, CancellationToken cancellationToken)
@@ -54,8 +54,11 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Email
 				)
 				.ConfigureAwait(false);
 
+#if NET6_0_OR_GREATER
+			var responseContent = await result.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+#else
 			var responseContent = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
-
+#endif
 			if (!result.IsSuccessStatusCode)
 			{
 				var error = JsonSerializer.Deserialize<ApiRequestErrorResult>(responseContent);

@@ -1,4 +1,4 @@
-﻿// ﻿﻿Copyright (c) Code Impressions, LLC. All Rights Reserved.
+﻿// Copyright (c) Code Impressions, LLC. All Rights Reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License")
 //  you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Sms
 				string? ResourceId, CommunicationsStatus Status, object? ChannelCommunication, IContentModel? ContentModel, Exception? Exception)
 			: base(EventName, ChannelId, ChannelProviderId, PipelineName, PipelineId, ResourceId, Status, ChannelCommunication, ContentModel, Exception)
 		{
-			var infobipException = this.Infobip().Voice.Error as ErrorStatus;
-			if (infobipException != null && Exception == null)
+			if (this.Infobip().Voice.Error is ErrorStatus infobipException && Exception == null)
 				base.Exception = new InfobipException(infobipException);
 		}
 
