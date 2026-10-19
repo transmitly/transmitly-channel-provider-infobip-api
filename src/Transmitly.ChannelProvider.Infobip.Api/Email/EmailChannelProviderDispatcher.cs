@@ -26,7 +26,7 @@ using Transmitly.Util;
 namespace Transmitly.ChannelProvider.Infobip.Api.Email
 {
 
-	public sealed class EmailChannelProviderDispatcher(InfobipChannelProviderConfiguration configuration) : ChannelProviderRestDispatcher<IEmail>(null)
+	public sealed class EmailChannelProviderDispatcher(InfobipChannelProviderConfiguration configuration) : ChannelProviderRestDispatcher<IEmail>(RestClientConfiguration.CreateHttpClient(configuration))
 	{
 		private const string SendEmailPath = "email/3/send";
 		private readonly InfobipChannelProviderConfiguration _configuration = configuration;

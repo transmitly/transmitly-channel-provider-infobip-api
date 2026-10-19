@@ -26,7 +26,7 @@ using Transmitly.Util;
 
 namespace Transmitly.ChannelProvider.Infobip.Api.Sms
 {
-	public sealed class SmsChannelProviderDispatcher(InfobipChannelProviderConfiguration configuration) : ChannelProviderRestDispatcher<ISms>(null)
+	public sealed class SmsChannelProviderDispatcher(InfobipChannelProviderConfiguration configuration) : ChannelProviderRestDispatcher<ISms>(RestClientConfiguration.CreateHttpClient(configuration))
 	{
 		private const string SendAdvancedSmsMessage = "sms/2/text/advanced";
 		private readonly InfobipChannelProviderConfiguration _configuration = configuration;

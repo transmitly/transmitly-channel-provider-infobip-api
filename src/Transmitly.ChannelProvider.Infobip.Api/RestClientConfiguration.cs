@@ -13,6 +13,8 @@
 //  limitations under the License.
 
 using System;
+using System.Collections.Concurrent;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Transmitly.ChannelProvider.Infobip.Configuration;
@@ -22,18 +24,26 @@ namespace Transmitly.ChannelProvider.Infobip.Api
 {
 	internal static class RestClientConfiguration
 	{
+		// Dispatchers can be created per dispatch; one handler (connection pool) per proxy keeps sockets from leaking.
+		private static readonly ConcurrentDictionary<IWebProxy, HttpMessageHandler> _proxyHandlers = new();
+
+		public static HttpClient? CreateHttpClient(InfobipChannelProviderConfiguration? channelProviderConfiguration)
+		{
+			if (channelProviderConfiguration?.WebProxy == null)
+				return null;
+
+			var handler = _proxyHandlers.GetOrAdd(channelProviderConfiguration.WebProxy, proxy => new HttpClientHandler
+			{
+				Proxy = proxy,
+				UseCookies = false
+			});
+			return new HttpClient(handler, disposeHandler: false);
+		}
+
 		public static void Configure(HttpClient httpClient, InfobipChannelProviderConfiguration channelProviderConfiguration)
 		{
 			Guard.AgainstNull(httpClient);
 			Guard.AgainstNull(channelProviderConfiguration);
-
-			if (channelProviderConfiguration.WebProxy != null)
-			{
-				httpClient = new(new HttpClientHandler
-				{
-					Proxy = channelProviderConfiguration.WebProxy
-				});
-			}
 
 			httpClient.BaseAddress = new Uri(Guard.AgainstNullOrWhiteSpace(channelProviderConfiguration.BasePath));
 			httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(channelProviderConfiguration.UserAgent);

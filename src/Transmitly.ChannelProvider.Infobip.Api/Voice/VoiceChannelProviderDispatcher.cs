@@ -25,7 +25,7 @@ using Transmitly.Util;
 using Transmitly.ChannelProvider.Infobip.Api.Voice.SendAdvancedVoiceMessage;
 namespace Transmitly.ChannelProvider.Infobip.Api.Voice
 {
-	public sealed class VoiceChannelProviderDispatcher(InfobipChannelProviderConfiguration configuration) : ChannelProviderRestDispatcher<IVoice>(null)
+	public sealed class VoiceChannelProviderDispatcher(InfobipChannelProviderConfiguration configuration) : ChannelProviderRestDispatcher<IVoice>(RestClientConfiguration.CreateHttpClient(configuration))
 	{
 		private const string AdvancedCallEndpoint = "tts/3/advanced";
 		private readonly InfobipChannelProviderConfiguration _configuration = configuration;
