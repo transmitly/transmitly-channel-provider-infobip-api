@@ -29,7 +29,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api
 		{
 		}
 
-		private static JsonNamingPolicy? ResolveNamingPolicy()
+		private static EnumMemberNamingPolicy? ResolveNamingPolicy()
 		{
 			var map = typeof(TEnum).GetFields(BindingFlags.Public | BindingFlags.Static)
 				.Select(f => (f.Name, AttributeName: f.GetCustomAttribute<EnumMemberAttribute>()?.Value))

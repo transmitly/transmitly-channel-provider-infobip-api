@@ -51,7 +51,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Tests
 			public string? GetQueryValue(string key) => key == DeliveryUtil.ChannelIdKey ? channelId : key == DeliveryUtil.ChannelProviderIdKey ? Id.ChannelProvider.Infobip() : null;
 			public string? GetFormValue(string key) => null;
 			public string? GetHeaderValue(string key) => key.Equals("X-Hub-Signature", StringComparison.OrdinalIgnoreCase) ? signature : null;
-			public string? GetValue(string key) => GetQueryValue(key) ?? GetHeaderValue(key);
+			public string? GetValue(string key) => throw new System.NotSupportedException("The ASP.NET hosts throw here; use GetQueryValue, GetFormValue or GetHeaderValue.");
 			public string? Content => Body;
 			public string? RequestUrl => null;
 			public string? PipelineIntent => null;

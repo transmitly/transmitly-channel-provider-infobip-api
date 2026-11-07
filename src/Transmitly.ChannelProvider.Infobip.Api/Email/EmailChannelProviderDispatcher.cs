@@ -140,7 +140,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Email
 			foreach (var resource in linkedResources ?? [])
 			{
 				// Infobip matches HTML's cid:FILENAME against the inline image's file name; accept ids given with or without that prefix.
-				var contentId = resource.Id.StartsWith("cid:", StringComparison.OrdinalIgnoreCase) ? resource.Id.Substring(4) : resource.Id;
+				var contentId = resource.Id.StartsWith("cid:", StringComparison.OrdinalIgnoreCase) ? resource.Id[4..] : resource.Id;
 				form.Add(await FileContentAsync(resource.ContentStream, resource.ContentType).ConfigureAwait(false), EmailField.InlineImage, contentId);
 			}
 		}
