@@ -137,6 +137,10 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Voice
 				if (string.IsNullOrWhiteSpace(url))
 					return null;
 			}
+
+			if (string.IsNullOrWhiteSpace(url))
+				return null;
+
 			return new Uri(url).AddPipelineContext(messageId, context.PipelineIntent, context.PipelineId, context.ChannelId, context.ChannelProviderId).ToString();
 		}
 
