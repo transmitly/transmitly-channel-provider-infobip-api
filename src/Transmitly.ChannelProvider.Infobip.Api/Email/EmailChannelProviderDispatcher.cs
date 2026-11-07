@@ -15,21 +15,35 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System;
 using Transmitly.Delivery;
 using Transmitly.ChannelProvider.Infobip.Api.Sms.SendSmsMessage;
 using Transmitly.ChannelProvider.Infobip.Configuration;
+using Transmitly.ChannelProvider.Infobip.Configuration.Email;
 using Transmitly.Util;
 
 namespace Transmitly.ChannelProvider.Infobip.Api.Email
 {
 
-	public sealed class EmailChannelProviderDispatcher(InfobipChannelProviderConfiguration configuration) : ChannelProviderRestDispatcher<IEmail>(RestClientConfiguration.CreateHttpClient(configuration))
+	public sealed class EmailChannelProviderDispatcher : ChannelProviderRestDispatcher<IEmail>
 	{
 		private const string SendEmailPath = "email/3/send";
-		private readonly InfobipChannelProviderConfiguration _configuration = configuration;
+		private readonly InfobipChannelProviderConfiguration _configuration;
+
+		public EmailChannelProviderDispatcher(InfobipChannelProviderConfiguration configuration)
+			: this(configuration, RestClientConfiguration.CreateHttpClient(configuration))
+		{
+		}
+
+		internal EmailChannelProviderDispatcher(InfobipChannelProviderConfiguration configuration, HttpClient? httpClient)
+			: base(httpClient)
+		{
+			_configuration = configuration;
+		}
 
 		protected override void ConfigureHttpClient(HttpClient httpClient)
 		{
@@ -91,7 +105,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Email
 		private static async Task<HttpContent> CreateMessageContent(IPlatformIdentityAddress[] recipients, IEmail email, IDispatchCommunicationContext context)
 		{
 			MultipartFormDataContent form = [];
-			var emailProperties = new EmailExtendedChannelProperties(email.ExtendedProperties);
+			var emailProperties = email.Infobip();
 			bool hasTemplateId = emailProperties.TemplateId.HasValue && emailProperties.TemplateId.Value > 0;
 			var messageId = Guid.NewGuid().ToString("N");
 			TryAddRecipients(recipients, email, form);
@@ -109,11 +123,45 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Email
 			AddStringContent(form, EmailField.MessageId, messageId);
 			AddStringContent(form, EmailField.ApplicationId, emailProperties.ApplicationId);
 			AddStringContent(form, EmailField.EntityId, emailProperties.EntityId);
+			await AddAttachmentsAsync(form, email.Attachments, context.ContentModel?.LinkedResources).ConfigureAwait(false);
 
 			return form;
 		}
 
-		private static async Task TryAddAmpContent(IEmail email, IDispatchCommunicationContext context, MultipartFormDataContent form, EmailExtendedChannelProperties emailProperties)
+		private static async Task AddAttachmentsAsync(MultipartFormDataContent form, IReadOnlyCollection<IEmailAttachment>? attachments, IReadOnlyList<LinkedResource>? linkedResources)
+		{
+			var index = 0;
+			foreach (var attachment in attachments ?? [])
+			{
+				var fileName = string.IsNullOrWhiteSpace(attachment.Name) ? $"attachment-{++index}" : attachment.Name!;
+				form.Add(await FileContentAsync(attachment.ContentStream, attachment.ContentType).ConfigureAwait(false), EmailField.Attachment, fileName);
+			}
+
+			foreach (var resource in linkedResources ?? [])
+			{
+				// Infobip matches HTML's cid:FILENAME against the inline image's file name; accept ids given with or without that prefix.
+				var contentId = resource.Id.StartsWith("cid:", StringComparison.OrdinalIgnoreCase) ? resource.Id.Substring(4) : resource.Id;
+				form.Add(await FileContentAsync(resource.ContentStream, resource.ContentType).ConfigureAwait(false), EmailField.InlineImage, contentId);
+			}
+		}
+
+		private static async Task<HttpContent> FileContentAsync(Stream? stream, string? contentType)
+		{
+			Guard.AgainstNull(stream);
+			// Every recipient's email shares the same resource streams: read each from the start, and copy it
+			// so disposing the request (which .NET Framework's HttpClient does) can't close the caller's stream.
+			if (stream!.CanSeek)
+				stream.Position = 0;
+			using var buffer = new MemoryStream();
+			await stream.CopyToAsync(buffer).ConfigureAwait(false);
+
+			var content = new ByteArrayContent(buffer.ToArray());
+			if (!string.IsNullOrWhiteSpace(contentType))
+				content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
+			return content;
+		}
+
+		private static async Task TryAddAmpContent(IEmail email, IDispatchCommunicationContext context, MultipartFormDataContent form, IEmailExtendedChannelProperties emailProperties)
 		{
 			var ampTemplate = emailProperties.AmpHtml.GetTemplateRegistration(context.CultureInfo, false);
 			if (ampTemplate == null)
@@ -125,7 +173,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Email
 			AddStringContent(form, EmailField.AmpHtml, ampContent, false);
 		}
 
-		private static async Task<string?> GetNotifyUrl(string messageId, EmailExtendedChannelProperties emailProperties, IEmail email, IDispatchCommunicationContext context)
+		private static async Task<string?> GetNotifyUrl(string messageId, IEmailExtendedChannelProperties emailProperties, IEmail email, IDispatchCommunicationContext context)
 		{
 			string? url;
 			var urlResolver = emailProperties.NotifyUrlResolver ?? email.DeliveryReportCallbackUrlResolver;

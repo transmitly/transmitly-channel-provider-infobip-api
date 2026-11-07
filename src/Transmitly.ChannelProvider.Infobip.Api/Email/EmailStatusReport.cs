@@ -53,5 +53,8 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Email
 
 		[JsonPropertyName("browserLink")]
 		public string? BrowserLink { get; set; }
+
+		[JsonPropertyName("sendingIp")]
+		public string? SendingIp { get; set; }
 	}
 }

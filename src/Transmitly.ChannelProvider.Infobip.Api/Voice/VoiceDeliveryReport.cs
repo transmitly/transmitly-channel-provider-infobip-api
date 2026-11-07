@@ -27,8 +27,6 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Voice
 				string? ResourceId, CommunicationsStatus Status, object? ChannelCommunication, IContentModel? ContentModel, Exception? Exception)
 			: base(EventName, ChannelId, ChannelProviderId, PipelineName, PipelineId, ResourceId, Status, ChannelCommunication, ContentModel, Exception)
 		{
-			if (this.Infobip().Voice.Error is ErrorStatus infobipException && Exception == null)
-				base.Exception = new InfobipException(infobipException);
 		}
 
 		public string? To => this.Infobip().Voice.To;

@@ -18,20 +18,18 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Sms
 	{
 		public static SmsDeliveryReport ApplyExtendedProperties(this SmsDeliveryReport voiceDeliveryReport, SmsStatusReport report)
 		{
-			_ = new ExtendedSmsDeliveryReportProperties(voiceDeliveryReport)
-			{
-				BulkId = report.BulkId,
-				MessageId = report.MessageId,
-				To = report.To,
-				From = report.From,
-				MccMnc = report.MccMnc,
-				CallbackData = report.CallbackData,
-				Price = report.Price,
-				ApplicationId = report.ApplicationId,
-				EntityId = report.EntityId,
-				Status = report.Status,
-				Error = report.Error
-			};
+			var sms = voiceDeliveryReport.Infobip().Sms;
+			sms.BulkId = report.BulkId;
+			sms.MessageId = report.MessageId;
+			sms.To = report.To;
+			sms.From = report.From;
+			sms.MccMnc = report.MccMnc;
+			sms.CallbackData = report.CallbackData;
+			sms.Price = report.Price;
+			sms.ApplicationId = report.ApplicationId;
+			sms.EntityId = report.EntityId;
+			sms.Status = report.Status;
+			sms.Error = report.Error;
 			return voiceDeliveryReport;
 		}
 	}

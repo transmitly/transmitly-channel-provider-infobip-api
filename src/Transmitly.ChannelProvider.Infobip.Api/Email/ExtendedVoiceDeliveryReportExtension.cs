@@ -18,16 +18,19 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Email
 	{
 		public static EmailDeliveryReport ApplyExtendedProperties(this EmailDeliveryReport voiceDeliveryReport, EmailStatusReport report)
 		{
-			_ = new ExtendedEmailDeliveryReportProperties(voiceDeliveryReport)
-			{
-				BulkId = report.BulkId,
-				MessageId = report.MessageId,
-				To = report.To,
-				CallbackData = report.CallbackData,
-				Price = report.Price,
-				Status = report.Status,
-				Error = report.Error
-			};
+			var email = voiceDeliveryReport.Infobip().Email;
+			email.BulkId = report.BulkId;
+			email.MessageId = report.MessageId;
+			email.To = report.To;
+			email.SentAt = report.SentAt;
+			email.DoneAt = report.DoneAt;
+			email.SmsCount = report.SmsCount;
+			email.CallbackData = report.CallbackData;
+			email.Price = report.Price;
+			email.Status = report.Status;
+			email.Error = report.Error;
+			email.BrowserLink = report.BrowserLink;
+			email.SendingIp = report.SendingIp;
 			return voiceDeliveryReport;
 		}
 	}

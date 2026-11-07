@@ -12,11 +12,7 @@ That package registers this API implementation for you.
 
 ## What This Package Provides
 
-- `SmsChannelProviderDispatcher` for `Sms`.
-- `EmailChannelProviderDispatcher` for `Email`.
-- `VoiceChannelProviderDispatcher` for `Voice`.
-- Delivery-report request adaptors for Infobip email, SMS, and voice webhooks.
-- Concrete channel-property adaptors for Infobip email, SMS, and voice features.
+- Infobip-specific settings (`email.Infobip()`, `sms.Infobip()`, `voice.Infobip()`) and delivery-report values (`report.Infobip()`).
 
 ## Using This Package Directly (Advanced)
 
@@ -44,9 +40,6 @@ builder.ChannelProvider
 	.AddDeliveryReportRequestAdaptor<SmsDeliveryStatusReportAdaptor>()
 	.AddDeliveryReportRequestAdaptor<VoiceDeliveryStatusReportAdaptor>()
 	.AddDeliveryReportRequestAdaptor<EmailDeliveryStatusReportAdaptor>()
-	.AddSmsExtendedPropertiesAdaptor<SmsExtendedChannelProperties>()
-	.AddVoiceExtendedPropertiesAdaptor<VoiceExtendedChannelProperties>()
-	.AddEmailExtendedPropertiesAdaptor<EmailExtendedChannelProperties>()
 	.Register();
 ```
 

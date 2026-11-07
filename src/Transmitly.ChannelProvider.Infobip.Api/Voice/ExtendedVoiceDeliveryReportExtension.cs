@@ -18,19 +18,17 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Voice
 	{
 		public static VoiceDeliveryReport ApplyExtendedProperties(this VoiceDeliveryReport voiceDeliveryReport, VoiceStatusReport report)
 		{
-			_ = new ExtendedVoiceDeliveryReportProperties(voiceDeliveryReport)
-			{
-				BulkId = report.BulkId,
-				MessageId = report.MessageId,
-				To = report.To,
-				From = report.From,
-				MccMnc = report.MccMnc,
-				CallbackData = report.CallbackData,
-				Price = report.Price,
-				VoiceCall = report.VoiceCall,
-				Status = report.Status,
-				Error = report.Error
-			};
+			var voice = voiceDeliveryReport.Infobip().Voice;
+			voice.BulkId = report.BulkId;
+			voice.MessageId = report.MessageId;
+			voice.To = report.To;
+			voice.From = report.From;
+			voice.MccMnc = report.MccMnc;
+			voice.CallbackData = report.CallbackData;
+			voice.Price = report.Price;
+			voice.VoiceCall = report.VoiceCall;
+			voice.Status = report.Status;
+			voice.Error = report.Error;
 
 			return voiceDeliveryReport;
 		}

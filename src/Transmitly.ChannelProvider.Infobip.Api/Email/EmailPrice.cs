@@ -13,9 +13,10 @@
 //  limitations under the License.
 
 using System.Text.Json.Serialization;
+using Transmitly.ChannelProvider.Infobip.Configuration.Email;
 namespace Transmitly.ChannelProvider.Infobip.Api.Email
 {
-	public sealed class EmailPrice
+	public sealed class EmailPrice : IEmailPrice
 	{
 		[JsonPropertyName("pricePerMessage")]
 		public double? PricePerMessage { get; set; }

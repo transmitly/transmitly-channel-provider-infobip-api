@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<!-- No .NET Framework targets: on .NET Framework, System.Text.Json 10 ships newer Microsoft.Bcl.AsyncInterfaces /
 		     System.Threading.Tasks.Extensions than the MSTest adapter was built against, and the SDK can't generate redirects
 		     for the adapter, so tests aren't discovered. The Twilio and Mailgun tests cover the same proxy logic on .NET Framework. -->
-		<TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
+		<TargetFrameworks>net10.0;net9.0;net8.0;net6.0</TargetFrameworks>
 	</PropertyGroup>
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -14,19 +14,23 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-		<PackageReference Include="MSTest.TestAdapter" Version="3.8.3" />
-		<PackageReference Include="MSTest.TestFramework" Version="3.8.3" />
-		<PackageReference Include="coverlet.collector" Version="6.0.4">
+		<PackageReference Include="coverlet.collector" Version="10.1.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Moq" Version="4.21.0" />
 	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
-		<Reference Include="Microsoft.CSharp" />
+	<ItemGroup Condition="'$(TargetFramework)' != 'net6.0'">
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="4.5.2" />
+		<PackageReference Include="MSTest.TestFramework" Version="4.5.2" />
 	</ItemGroup>
-
+	<!-- Test.Sdk 18 and MSTest 4 dropped net6.0; these are the last versions that run it. -->
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.11.1" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.11.1" />
+	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\Transmitly.ChannelProvider.Infobip.Api\Transmitly.ChannelProvider.Infobip.Api.csproj" />
 	</ItemGroup>

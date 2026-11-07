@@ -21,6 +21,7 @@ using System.Text.Json;
 using System;
 using Transmitly.Delivery;
 using Transmitly.ChannelProvider.Infobip.Configuration;
+using Transmitly.ChannelProvider.Infobip.Configuration.Voice;
 using Transmitly.Util;
 using Transmitly.ChannelProvider.Infobip.Api.Voice.SendAdvancedVoiceMessage;
 namespace Transmitly.ChannelProvider.Infobip.Api.Voice
@@ -90,7 +91,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Voice
 
 		private static async Task<HttpContent> CreateAdvancedMessagePayloadAsync(IPlatformIdentityAddress recipient, IVoice voice, IDispatchCommunicationContext context)
 		{
-			var voiceProperties = new VoiceExtendedChannelProperties(voice.ExtendedProperties);
+			var voiceProperties = voice.Infobip();
 			var messageId = Guid.NewGuid().ToString("N");
 			var bulkId = Guid.NewGuid().ToString("N");
 
@@ -124,7 +125,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Voice
 		//	};
 		//}
 
-		private static async Task<string?> GetNotifyUrl(string messageId, VoiceExtendedChannelProperties voiceProperties, IVoice voice, IDispatchCommunicationContext context)
+		private static async Task<string?> GetNotifyUrl(string messageId, IVoiceExtendedChannelProperties voiceProperties, IVoice voice, IDispatchCommunicationContext context)
 		{
 			string? url;
 			var urlResolver = voiceProperties.NotifyUrlResolver ?? voice.DeliveryReportCallbackUrlResolver;

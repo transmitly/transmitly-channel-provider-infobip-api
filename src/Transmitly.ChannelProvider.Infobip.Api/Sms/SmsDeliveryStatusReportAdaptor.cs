@@ -17,15 +17,21 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Transmitly.Delivery;
+using Transmitly.ChannelProvider.Infobip.Configuration;
+using Transmitly.Util;
 
 namespace Transmitly.ChannelProvider.Infobip.Api.Sms
 {
-	public sealed class SmsDeliveryStatusReportAdaptor : IChannelProviderDeliveryReportRequestAdaptor
+	public sealed class SmsDeliveryStatusReportAdaptor(InfobipChannelProviderConfiguration configuration) : IChannelProviderDeliveryReportRequestAdaptor
 	{
+		private readonly InfobipChannelProviderConfiguration _configuration = Guard.AgainstNull(configuration);
+
 		public Task<IReadOnlyCollection<DeliveryReport>?> AdaptAsync(IRequestAdaptorContext adaptorContext)
 		{
 			if (!ShouldAdapt(adaptorContext))
 				return Task.FromResult<IReadOnlyCollection<DeliveryReport>?>(null);
+
+			DeliveryReportSignature.Validate(adaptorContext, _configuration);
 
 			var statuses = JsonSerializer.Deserialize<SmsStatusReports>(adaptorContext.Content!);
 
@@ -42,7 +48,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Sms
 						adaptorContext.PipelineIntent,
 						adaptorContext.PipelineId,
 						smsReport.MessageId,
-						Util.ToDispatchStatus(smsReport.Status?.GroupId),
+						Util.ToDispatchStatus(smsReport.Status?.GroupId, smsReport.Error),
 						null,
 						null,
 						null
@@ -60,8 +66,8 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Sms
 				return false;
 
 			return
-				(adaptorContext.GetValue(DeliveryUtil.ChannelIdKey)?.Equals(Id.Channel.Sms(), StringComparison.InvariantCultureIgnoreCase) ?? false) &&
-				(adaptorContext.GetValue(DeliveryUtil.ChannelProviderIdKey)?.StartsWith(Id.ChannelProvider.Infobip(), StringComparison.InvariantCultureIgnoreCase) ?? false);
+				(adaptorContext.GetQueryValue(DeliveryUtil.ChannelIdKey)?.Equals(Id.Channel.Sms(), StringComparison.InvariantCultureIgnoreCase) ?? false) &&
+				(adaptorContext.GetQueryValue(DeliveryUtil.ChannelProviderIdKey)?.StartsWith(Id.ChannelProvider.Infobip(), StringComparison.InvariantCultureIgnoreCase) ?? false);
 		}
 	}
 }

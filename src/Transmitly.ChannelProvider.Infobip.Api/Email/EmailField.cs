@@ -38,5 +38,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Email
 		public const string ReplyTo = "replyTo";
 		public const string preserveRecipients = "preserveRecipients";
 		public const string sendAt = "sendAt";
+		public const string Attachment = "attachment";
+		public const string InlineImage = "inlineImage";
 	}
 }

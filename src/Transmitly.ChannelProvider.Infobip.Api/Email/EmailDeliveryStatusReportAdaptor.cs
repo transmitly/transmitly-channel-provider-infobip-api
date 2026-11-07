@@ -17,16 +17,22 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Transmitly.Delivery;
+using Transmitly.ChannelProvider.Infobip.Configuration;
+using Transmitly.Util;
 
 namespace Transmitly.ChannelProvider.Infobip.Api.Email
 {
-	public sealed class EmailDeliveryStatusReportAdaptor : IChannelProviderDeliveryReportRequestAdaptor
+	public sealed class EmailDeliveryStatusReportAdaptor(InfobipChannelProviderConfiguration configuration) : IChannelProviderDeliveryReportRequestAdaptor
 	{
+		private readonly InfobipChannelProviderConfiguration _configuration = Guard.AgainstNull(configuration);
+
 		public Task<IReadOnlyCollection<DeliveryReport>?> AdaptAsync(IRequestAdaptorContext adaptorContext)
 		{
 
 			if (!ShouldAdapt(adaptorContext))
 				return Task.FromResult<IReadOnlyCollection<DeliveryReport>?>(null);
+
+			DeliveryReportSignature.Validate(adaptorContext, _configuration);
 
 			var statuses = JsonSerializer.Deserialize<EmailStatusReports>(adaptorContext.Content!);
 
@@ -43,7 +49,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Email
 						adaptorContext.PipelineIntent,
 						adaptorContext.PipelineId,
 						emailReport.MessageId,
-						Util.ToDispatchStatus(emailReport.Status?.GroupId),
+						Util.ToDispatchStatus(emailReport.Status?.GroupId, emailReport.Error),
 						null,
 						null,
 						null
@@ -60,8 +66,8 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Email
 			if (string.IsNullOrWhiteSpace(adaptorContext.Content))
 				return false;
 			return
-				(adaptorContext.GetValue(DeliveryUtil.ChannelIdKey)?.Equals(Id.Channel.Email(), StringComparison.InvariantCultureIgnoreCase) ?? false) &&
-				(adaptorContext.GetValue(DeliveryUtil.ChannelProviderIdKey)?.StartsWith(Id.ChannelProvider.Infobip(), StringComparison.InvariantCultureIgnoreCase) ?? false);
+				(adaptorContext.GetQueryValue(DeliveryUtil.ChannelIdKey)?.Equals(Id.Channel.Email(), StringComparison.InvariantCultureIgnoreCase) ?? false) &&
+				(adaptorContext.GetQueryValue(DeliveryUtil.ChannelProviderIdKey)?.StartsWith(Id.ChannelProvider.Infobip(), StringComparison.InvariantCultureIgnoreCase) ?? false);
 
 
 		}

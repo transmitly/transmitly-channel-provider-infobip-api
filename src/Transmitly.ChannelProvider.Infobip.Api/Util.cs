@@ -18,17 +18,19 @@ namespace Transmitly.ChannelProvider.Infobip.Api
 {
 	internal static class Util
 	{
-		public static CommunicationsStatus ToDispatchStatus(int? groupId)
+		public static CommunicationsStatus ToDispatchStatus(int? groupId, ErrorStatus? error = null)
 		{
+			// Infobip sends an error object on every report; id 0 (NO_ERROR) means nothing went wrong.
+			var detail = error?.Id is int id && id != 0 ? error.Description ?? error.Name : null;
 			return (groupId) switch
 			{
 				//PENDING
-				1 => CommunicationsStatus.Success(InfobipConstant.Id, "Dispatched", 1),
+				1 => CommunicationsStatus.Success(InfobipConstant.Id, "Dispatched", 1, detail),
 				//UNDELIVERABLE
-				2 or 4 or 5 => CommunicationsStatus.ServerError(InfobipConstant.Id, "Undeliverable"),
+				2 or 4 or 5 => CommunicationsStatus.ServerError(InfobipConstant.Id, "Undeliverable", 0, detail),
 				//DELIVERED
-				3 => CommunicationsStatus.Success(InfobipConstant.Id, "Delivered"),
-				_ => CommunicationsStatus.ClientError(InfobipConstant.Id, "Unknown")
+				3 => CommunicationsStatus.Success(InfobipConstant.Id, "Delivered", 0, detail),
+				_ => CommunicationsStatus.ClientError(InfobipConstant.Id, "Unknown", 0, detail)
 			};
 		}
 	}

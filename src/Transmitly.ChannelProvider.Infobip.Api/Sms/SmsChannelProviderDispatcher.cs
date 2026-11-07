@@ -21,6 +21,7 @@ using System.Text;
 using Transmitly.Delivery;
 using System;
 using Transmitly.ChannelProvider.Infobip.Configuration;
+using Transmitly.ChannelProvider.Infobip.Configuration.Sms;
 using Transmitly.ChannelProvider.Infobip.Api.Sms.SendSmsMessage;
 using Transmitly.Util;
 
@@ -88,7 +89,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Sms
 
 		private static async Task<HttpContent> CreateSingleMessageRequestContent(IPlatformIdentityAddress recipient, ISms sms, IDispatchCommunicationContext communicationContext)
 		{
-			var smsProperties = new SmsExtendedChannelProperties(sms.ExtendedProperties);
+			var smsProperties = sms.Infobip();
 
 			var messageId = Guid.NewGuid().ToString("N");
 			var bulkId = Guid.NewGuid().ToString("N");
@@ -107,7 +108,7 @@ namespace Transmitly.ChannelProvider.Infobip.Api.Sms
 			return new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
 		}
 
-		private static async Task<string?> GetNotifyUrl(string messageId, SmsExtendedChannelProperties voiceProperties, ISms sms, IDispatchCommunicationContext context)
+		private static async Task<string?> GetNotifyUrl(string messageId, ISmsExtendedChannelProperties voiceProperties, ISms sms, IDispatchCommunicationContext context)
 		{
 			string? url;
 			var urlResolver = voiceProperties.NotifyUrlResolver ?? sms.DeliveryReportCallbackUrlResolver;
